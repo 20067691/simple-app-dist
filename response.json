@@ -1,10 +1,1 @@
-*.js
-!jest.config.js
-*.d.ts
-node_modules
-
-# CDK asset staging directory
-.cdk.staging
-cdk.out
-
 {"statusCode":200,"headers":{"content-type":"application/json"},"body":{"message":"This is a message returned from lambda Function"}}
