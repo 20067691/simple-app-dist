@@ -79,5 +79,36 @@ export class SimpleAppStack extends cdk.Stack {
 
     new cdk.CfnOutput(this, "Get Movie Function Url", { value: getMovieByIdURL.url });
 
+    // Define a new Lambda function to retrieve all movies
+const getAllMoviesFn = new lambdanode.NodejsFunction(
+  this,
+  "GetAllMoviesFn",
+  {
+    architecture: lambda.Architecture.ARM_64,
+    runtime: lambda.Runtime.NODEJS_18_X,
+    entry: `${__dirname}/../lambdas/getAllMovies.ts`,
+    timeout: cdk.Duration.seconds(10),
+    memorySize: 128,
+    environment: {
+      TABLE_NAME: moviesTable.tableName,
+      REGION: 'eu-west-1',
+    },
+  }
+);
+
+// Add a Function URL to the Lambda function for public access
+const getAllMoviesURL = getAllMoviesFn.addFunctionUrl({
+  authType: lambda.FunctionUrlAuthType.NONE,
+  cors: {
+    allowedOrigins: ["*"],
+  },
+});
+
+// Grant read permissions on the movies table
+moviesTable.grantReadData(getAllMoviesFn);
+
+// Output the URL for easy access after deployment
+new cdk.CfnOutput(this, "Get All Movies Function Url", { value: getAllMoviesURL.url });
+
   }
 }
